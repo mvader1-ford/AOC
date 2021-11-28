@@ -15,7 +15,7 @@ let package = Package(
         // .package(url: /* package url */, from: "1.0.0"),
         .package(name: "swift-collections", url: "git@github.com:apple/swift-collections.git", from: "1.0.2"),
         .package(name: "swift-algorithms", url: "git@github.com:apple/swift-algorithms.git", from: "0.0.2"),
-        .package(name: "MathParser", url: "git@github.com:davedelong/DDMathParser.git", .branch("master"))
+        .package(name: "MathParser", url: "https://github.com/davedelong/DDMathParser.git", .branch("master"))
     ],
     targets: [
    
