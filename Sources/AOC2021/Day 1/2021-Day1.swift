@@ -17,6 +17,95 @@ class Day1: Day {
         
         let allIngredientCollections: [IngredientCollection]
         
+        func showMeDangerCollections() -> [IngredientCollection] {
+            let safeList = thisDoesNotContainAny()
+            var bad = allIngredientCollections
+            bad = bad.reduce([], { partialResult, ingredientCollection in
+                var updatedList = ingredientCollection.allergens.filter{ !safeList.contains($0) }
+                let updated = IngredientCollection()
+                updated.allergens = updatedList
+                
+                return partialResult + [updated]
+            })
+            return bad
+        }
+        
+        func howManyTimesDoTheyAppear() -> Int  {
+            let stuff = thisDoesNotContainAny()
+            var counter = 0
+            let allIngredients = allIngredientCollections.map{ Array($0.mangledNames) }.flatMap{ $0 }
+            for mangled in stuff {
+                let matchCount = allIngredients.filter{ $0 == mangled }.count
+                counter += matchCount
+            }
+            
+            return counter
+        }
+        
+        func thisDoesNotContainAny() -> Set<String> {
+            var allStuff = Set<String>()
+            var allGo = Set(allMangledNames())
+            for allergen in allAllergens() {
+                let match = thisDoesNotContain(allergen: allergen)
+                allGo = allGo.intersection(match)
+            }
+            
+            
+            
+            return allGo
+            
+        }
+
+        func thisDoesNotContain(allergen: String) -> Set<String> {
+            var goSet = Set<String>()
+            let mangledNameLists = allIngredientCollections.filter{ $0.containsAllergen(allergen) }.map { $0.mangledNames }
+            let pairCount = mangledNameLists.count
+            for matchingMangled in allMangledNames() {
+                let matchCount = mangledNameLists.filter{ $0.contains(matchingMangled) }.count
+                if matchCount != pairCount {
+                    goSet.insert(matchingMangled)
+                }
+            }
+            
+            return goSet
+        }
+        
+        
+        func allergenCannotBeCausedByAny() -> [String] {
+            var cannotBeCausedBy = [String]()
+            for allergen in allAllergens() {
+                let check1 = allergenCannotBeCausedByOneOfThese(allergen: allergen)
+                cannotBeCausedBy = cannotBeCausedBy + check1
+            }
+            
+            let count1 = allAllergens().count
+            var realAnswer = [String]()
+            for allergen in allAllergens() {
+                let countFound = cannotBeCausedBy.filter{ $0 == allergen }.count
+                if countFound == count1 {
+                    realAnswer.append(allergen)
+                }
+            }
+            
+            
+            return realAnswer
+        }
+        
+        func allergenCannotBeCausedByOneOfThese(allergen: String) -> Set<String> {
+            let mustBeList = allergenMustBeCausedByOneOfThese(allergen: allergen)
+            let mangledNames = Array(allIngredientCollections.map{ $0.mangledNames })
+            let answer = allMangledNames().filter{ !mustBeList.contains($0)}
+          
+            return answer
+        }
+        
+        func allergenMustBeCausedByOneOfThese(allergen: String) -> Set<String> {
+            let affectedGroup = allIngredientCollections.filter({ $0.containsAllergen(allergen)})
+            let mangledNamesInThoseGroups = affectedGroup.map{ $0.mangledNames }.flatMap{ $0 }
+            
+            return Set(mangledNamesInThoseGroups)
+        }
+        
         init(allIngredientCollections: [IngredientCollection]) {
             self.allIngredientCollections = allIngredientCollections
         }
@@ -41,7 +130,7 @@ class Day1: Day {
                     answer = true
                 }
             }
-
+            
             return answer
         }
         
@@ -80,7 +169,7 @@ class Day1: Day {
                 for allergen in allAllergens {
                     for allIngredientCollection in allIngredientCollections {
                         if allIngredientCollection.isAllergenPresentWithoutMangledName(allergen, mangledName) {
-                         
+                            
                         } else {
                             isAllergenPresentWithoutMangledName = true
                             var misMatchesDetails = misMatches[mangledName] ?? []
@@ -89,7 +178,7 @@ class Day1: Day {
                         }
                     }
                 }
-              
+                
             }
             
             return misMatches
@@ -104,7 +193,7 @@ class Day1: Day {
         var mangledNames: Set<String> = []
         
         func containsAllergen(_ allergen: String) -> Bool {
-            return allergen.contains(allergen)
+            return allergens.contains(allergen)
         }
         
         func possibleThingsFor(ingredient: String) -> Set<String> {
@@ -121,7 +210,7 @@ class Day1: Day {
             
             return mangledNames.contains(mangledName)
         }
-
+        
     }
     
     func allIngredientCollections() -> [IngredientCollection] {
@@ -148,15 +237,17 @@ class Day1: Day {
     override func part1() -> String {
         let a1 = allIngredientCollections()
         let a2 = IngredientAnalysis(allIngredientCollections: a1)
-        let a3 = a2.allAllergens()
-        let a4 = a2.allMangledNames()
-        let a5 = a2.nonAllergenics()
-        let allergensCount = a3.count
-        let answers = a2.cannotBeAllergenic()
-        return "c"
+        let cFound = a2.howManyTimesDoTheyAppear()
+       
+        return String(cFound)
     }
     
     override func part2() -> String {
+        let a1 = allIngredientCollections()
+
+        let a2 = IngredientAnalysis(allIngredientCollections: a1)
+
+        let c3 = a2.showMeDangerCollections()
         return "c"
     }
     
