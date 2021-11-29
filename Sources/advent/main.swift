@@ -5,7 +5,7 @@
 //  Created by Dave DeLong on 9/24/19.
 //
 
-import AOC2020
+import AOC2021
 
 let d = Day.day(for: Date())
 

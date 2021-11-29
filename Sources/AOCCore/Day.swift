@@ -31,9 +31,17 @@ open class Day: NSObject {
         
         while let next = enumerator?.nextObject() as? URL {
             guard let year = yearRegex.match(next.path)?.int(1) else { continue }
-            guard let day = dayRegex.match(next.path)?.int(1) else { continue }
-            
-            files[Pair(year, day)] = next.path
+            var day = 1
+            if let realValue  = dayRegex.match(next.path)?.int(1)  {
+                day = realValue
+            }
+            if year == 2021 && day == 1 {
+//                files[Pair(year, day)] = next.path
+                files[Pair(year, day)] = "/Users/mark/Documents/AOC/Tools/AOC/Sources/AOC2021/Resources/Day1.txt"
+            } else {
+                files[Pair(year, day)] = next.path
+            }
+
         }
         
         return files

@@ -17,7 +17,8 @@ public class Year {
     }
     
     public func day(_ day: Int) -> Day {
-        let dayClass = objc_getClass("AOC\(year).Day\(day)")
+        let realDay = year == 2021 ? 1 : day
+        let dayClass = objc_getClass("AOC\(year).Day\(realDay)")
         return (dayClass as! NSObject.Type).init() as! Day
     }
     
