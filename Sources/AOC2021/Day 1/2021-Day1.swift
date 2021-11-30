@@ -15,19 +15,37 @@ class Day1: Day {
     
     class IngredientAnalysis {
         
+        var cleanIngredients = [String]()
+        
         let allIngredientCollections: [IngredientCollection]
         
-        func showMeDangerCollections() -> [IngredientCollection] {
-            let safeList = thisDoesNotContainAny()
-            var bad = allIngredientCollections
-            bad = bad.reduce([], { partialResult, ingredientCollection in
-                var updatedList = ingredientCollection.allergens.filter{ !safeList.contains($0) }
-                let updated = IngredientCollection()
-                updated.allergens = updatedList
+        func possibleMangledNamesMatchingFor() -> [String: Set<String>] {
+            var possiblePatches = [String: Set<String>]()
+            for allergen in allAllergens() {
                 
-                return partialResult + [updated]
-            })
-            return bad
+                let affectedCollection = allIngredientCollections.filter{ $0.containsAllergen(allergen)}
+                for allIngredientCollection in affectedCollection {
+                    for mangledName in allIngredientCollection.mangledNames {
+                        let count = affectedCollection.filter({ $0.mangledNames.contains(mangledName) }).count
+                        if count == affectedCollection.count {
+                            var currentMatches = possiblePatches[allergen] ?? []
+                            currentMatches.insert(mangledName)
+                            possiblePatches.updateValue(currentMatches, forKey: allergen)
+                        }
+                    }
+                }
+            }
+            
+            return possiblePatches
+        }
+        
+        func showMeDangerCollections() -> [IngredientCollection] {
+            allIngredientCollections.forEach { item in
+                item.remove(clean: cleanIngredients)
+            }
+            let a = 123
+            
+            return allIngredientCollections
         }
         
         func howManyTimesDoTheyAppear() -> Int  {
@@ -49,13 +67,12 @@ class Day1: Day {
                 let match = thisDoesNotContain(allergen: allergen)
                 allGo = allGo.intersection(match)
             }
-            
-            
+            cleanIngredients = Array(allGo)
             
             return allGo
             
         }
-
+        
         func thisDoesNotContain(allergen: String) -> Set<String> {
             var goSet = Set<String>()
             let mangledNameLists = allIngredientCollections.filter{ $0.containsAllergen(allergen) }.map { $0.mangledNames }
@@ -69,7 +86,6 @@ class Day1: Day {
             
             return goSet
         }
-        
         
         func allergenCannotBeCausedByAny() -> [String] {
             var cannotBeCausedBy = [String]()
@@ -95,7 +111,7 @@ class Day1: Day {
             let mustBeList = allergenMustBeCausedByOneOfThese(allergen: allergen)
             let mangledNames = Array(allIngredientCollections.map{ $0.mangledNames })
             let answer = allMangledNames().filter{ !mustBeList.contains($0)}
-          
+            
             return answer
         }
         
@@ -192,6 +208,10 @@ class Day1: Day {
         var allergens: Set<String> = []
         var mangledNames: Set<String> = []
         
+        func remove(clean: [String]) {
+            mangledNames = mangledNames.filter{ !clean.contains($0) }
+        }
+        
         func containsAllergen(_ allergen: String) -> Bool {
             return allergens.contains(allergen)
         }
@@ -238,17 +258,77 @@ class Day1: Day {
         let a1 = allIngredientCollections()
         let a2 = IngredientAnalysis(allIngredientCollections: a1)
         let cFound = a2.howManyTimesDoTheyAppear()
-       
+        
         return String(cFound)
+    }
+    
+    var didProcess = [String]()
+    //  kpsdtv
+    func assessFunStuff(groups1: [String: Set<String>]) -> [String: String] {
+        var oneCheck = true
+
+        let possibleUnused = groups1.filter{ !didProcess.contains($0.0) }
+        let allRemaining = possibleUnused.map{ $0.1 }.flatMap{ $0 }
+        var useThisOne = ""
+     
+        for (key, value) in possibleUnused {
+            for item in value {
+                if allRemaining.filter({ $0 == item }).count == 1 {
+                    if oneCheck {
+                        useThisOne = item
+                        didProcess.append(key)
+                        oneCheck = false
+                    }
+                }
+            }
+        
+        }
+        
+        guard useThisOne != "" else {
+            var allDone = [String: String]()
+            let finalGroups = groups1
+            for group in finalGroups {
+                allDone.updateValue(group.1.first!, forKey: group.0)
+            }
+            
+            return allDone
+        }
+        
+        var myGroups = groups1
+        let singleItem = useThisOne
+        
+        for myGroup in groups1 {
+            if myGroup.1.contains(singleItem) && myGroup.1.count > 1 {
+                let theValues = myGroup.1.filter{ $0 == singleItem }
+                myGroups.updateValue(theValues, forKey: myGroup.0)
+            }
+        }
+        if myGroups.filter({ $0.1.count == 1 }).count == myGroups.count {
+            var allDone = [String: String]()
+            for group in myGroups {
+                allDone.updateValue(group.1.first!, forKey: group.0)
+            }
+            
+            return allDone
+        } else {
+            return assessFunStuff(groups1: myGroups)
+        }
     }
     
     override func part2() -> String {
         let a1 = allIngredientCollections()
-
         let a2 = IngredientAnalysis(allIngredientCollections: a1)
-
-        let c3 = a2.showMeDangerCollections()
-        return "c"
+        let cFound = a2.howManyTimesDoTheyAppear()
+        
+        let c3 = a2.possibleMangledNamesMatchingFor()
+        let c5 = assessFunStuff(groups1: c3)
+        
+        let sortedArray = c5.keys.sorted()
+        
+        let finalValues = sortedArray.map{ c5[$0]! }
+        
+        let answer = finalValues.joined(separator: ",")
+        return answer
     }
     
 }

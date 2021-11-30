@@ -37,7 +37,7 @@ open class Day: NSObject {
             }
             if year == 2021 && day == 1 {
 //                files[Pair(year, day)] = next.path
-                files[Pair(year, day)] = "/Users/mark/Documents/AOC/Tools/AOC/Sources/AOC2021/Resources/Day1.txt"
+                files[Pair(year, day)] = "/Users/mark/Desktop/AOC 14-57-49-562/Sources/AOC2021/Resources/Day1.txt"
             } else {
                 files[Pair(year, day)] = next.path
             }
