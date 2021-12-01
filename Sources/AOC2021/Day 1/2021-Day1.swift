@@ -30,12 +30,6 @@ class Day1: Day {
     
     override func part2() -> String {
         let array = input.integers
-        let offsetArray = [0] + array
-        let zippedArray = zip(offsetArray, array)
-        var counter = 0
-        let offsetArrayDroppingLast = Array(zippedArray.dropFirst())
-        let chunked1 = array.chunks(of: 3)
-        let pick1 = array.takeThree(startPickPointRange: 0)
         let indices = array.enumerated().map{ $0.0 }
         let stuff = indices.map{ array.takeThree(startPickPointRange: $0) }.compactMap{ $0 }
         let sums = stuff.map { $0.sum }
