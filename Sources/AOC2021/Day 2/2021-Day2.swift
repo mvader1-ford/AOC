@@ -31,7 +31,6 @@ class Day2: Day {
     }
     
     override func part1() -> String {
-        let position = CGPoint(x: 0, y: 0)
         let instructions = input.lines.words
         let instructionPairs = instructions.map{ wordPair -> (Instruction, Int) in
             let direction = Instruction(rawValue: wordPair.first!.raw)!
@@ -39,9 +38,8 @@ class Day2: Day {
             
             return (direction, value)
         }
-        print(instructionPairs)
         
-        var depth = instructionPairs.reduce(CGPoint.zero) { rollingValue, wordPair -> CGPoint in
+        let depth = instructionPairs.reduce(CGPoint.zero) { rollingValue, wordPair -> CGPoint in
             let valueFound = CGFloat(wordPair.1)
             switch wordPair.0 {
             case .forward:
@@ -73,9 +71,8 @@ class Day2: Day {
             
             return (direction, value)
         }
-        print(instructionPairs)
         let startingLocale = SubLocale(aim: 0, position: .zero)
-        var depth = instructionPairs.reduce(startingLocale) { rollingValue, wordPair -> SubLocale in
+        let depth = instructionPairs.reduce(startingLocale) { rollingValue, wordPair -> SubLocale in
             let valueFound = CGFloat(wordPair.1)
             switch wordPair.0 {
             case .forward:
