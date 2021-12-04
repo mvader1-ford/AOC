@@ -18,6 +18,22 @@ public enum Bit {
 
 public class Matrix<T: Hashable>: Hashable, CustomStringConvertible {
     
+   public func column(_ index: Int) -> [T] {
+        var column = [T]()
+        for item in 0..<5 {
+            column.append(self[item, index])
+        }
+        return column
+    }
+    
+//    public func row(_ index: Int) -> [T] {
+//         var column = [T]()
+//         for item in 0..<5 {
+//             column.append(self[index, item])
+//         }
+//         return column
+//     }
+    
     public static func ==(lhs: Matrix, rhs: Matrix) -> Bool {
         guard lhs.data.count == rhs.data.count else { return false }
         let rows = zip(lhs.data, rhs.data)
