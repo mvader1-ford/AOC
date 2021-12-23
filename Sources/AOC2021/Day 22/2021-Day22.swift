@@ -10,8 +10,25 @@ import AOCCore
 
 class Day22: Day {
     
-    struct LightsOn {
-  
+    struct LightsOn: Sequence, IteratorProtocol {
+        
+        mutating func next() -> Set<Vector3>? {
+            return nil
+        }
+        
+        
+        typealias Element = Set<Vector3>
+        
+        var current = 1
+        
+        mutating func next() -> Int? {
+            defer {
+                current *= 2
+            }
+            
+            return current
+        }
+        
         let points: Set<Vector3>
         
         func adding(_ other: LightsOn) -> LightsOn {
